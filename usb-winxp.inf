@@ -6,7 +6,7 @@ signature="$CHICAGO$"
 Class=USB
 ClassGUID={36FC9E60-C465-11CF-8056-444553540000}
 Provider=%Msft%
-LayoutFile=LAYOUT.INF
+CatalogFile = usb-winxp.cat
 DriverVer=10/01/2002,5.2.3790.1830
 
 [ControlFlags]
@@ -22,6 +22,13 @@ DefaultDestDir=11               ; LDID_SYS
 USB.CopyFiles.NT          = 10, system32\drivers
 Hub.CopyFiles.NT          = 10, system32\drivers
 CommonClassParent.CopyFiles = 10, system32\drivers
+
+[SourceDisksNames]
+1 = "WinXP USB driver file location"
+
+[SourceDisksFiles]
+usbhub-winxp.sys = 1
+usbccgp-winxp.sys = 1
 
 ; =================== Class Sections ===========================
 
@@ -84,8 +91,10 @@ Addreg=USBClassReg
 ; =================== Generic ==================================
 
 [Generic.Section.NTamd64]
-%USB\COMPOSITE.DeviceDesc%=Composite.Dev,USB\COMPOSITE
-%USB\UNKNOWN.DeviceDesc%=BADDEVICE.Dev,USB\UNKNOWN
+; %USB\COMPOSITE.DeviceDesc%=Composite.Dev,USB\COMPOSITE
+; %USB\UNKNOWN.DeviceDesc%=BADDEVICE.Dev,USB\UNKNOWN
+%USB\VID_077D&PID_0223.DeviceDesc%=Composite.Dev,USB\VID_077D&PID_0223
+
 
 ; --------------------------------------------------------------
 
@@ -131,7 +140,7 @@ DelReg=Composite.DelReg.NT
 HKR,,EnumPropPages32
 
 [Composite.Dev.NT.Services]
-AddService = usbccgp, 0x00000002, CommonClassParent.AddService
+AddService = usbccgp-winxp, 0x00000002, CommonClassParent.AddService
 
 [StandardHub.Dev.NT]
 CopyFiles=Hub.CopyFiles.NT
@@ -142,14 +151,14 @@ AddReg=StandardHub.AddReg.NT
 HKR,,EnumPropPages32,,"usbui.dll,USBHubPropPageProvider"
 
 [StandardHub.Dev.NT.Services]
-AddService = usbhub, 0x00000002, StandardHub.AddService
+AddService = usbhub-winxp, 0x00000002, StandardHub.AddService
 
 [StandardHub.AddService]
 DisplayName    = %StandardHub.SvcDesc%
 ServiceType    = 1                  ; SERVICE_KERNEL_DRIVER
 StartType      = 3                  ; SERVICE_DEMAND_START
 ErrorControl   = 1                  ; SERVICE_ERROR_NORMAL
-ServiceBinary  = %12%\usbhub.sys
+ServiceBinary  = %12%\usbhub-winxp.sys
 LoadOrderGroup = Base
 
 [CommonClassParent.AddService]
@@ -157,7 +166,7 @@ DisplayName    = %GenericParent.SvcDesc%
 ServiceType    = 1                  ; SERVICE_KERNEL_DRIVER
 StartType      = 3                  ; SERVICE_DEMAND_START
 ErrorControl   = 1                  ; SERVICE_ERROR_NORMAL
-ServiceBinary  = %12%\usbccgp.sys
+ServiceBinary  = %12%\usbccgp-winxp.sys
 LoadOrderGroup = Base
 
 
@@ -377,8 +386,8 @@ LoadOrderGroup = Base
 
 ; =================== Generic HUB ==================================
 [GenericHub.Section.NTamd64]
-%USB\CLASS_09&SUBCLASS_01.DeviceDesc%=StandardHub.Dev,USB\CLASS_09&SUBCLASS_01
-%USB\CLASS_09.DeviceDesc%=StandardHub.Dev,USB\CLASS_09
+; %USB\CLASS_09&SUBCLASS_01.DeviceDesc%=StandardHub.Dev,USB\CLASS_09&SUBCLASS_01
+; %USB\CLASS_09.DeviceDesc%=StandardHub.Dev,USB\CLASS_09
 
 ; =================== Global ==================================
 
@@ -387,10 +396,10 @@ HKR,,DevLoader,,*NTKERN
 
 [USB.CopyFiles]
 usbd.sys
-usbhub.sys
+usbhub-winxp.sys
 
 [USB.DelFiles]
-usbhub.sys,,,1
+usbhub-winxp.sys,,,1
 openhci.sys,,,1
 uhcd.sys,,,1
 usbd.sys,,,1
@@ -415,19 +424,19 @@ ehidjoy.inf,,,1
 
 [HUB.AddReg]
 HKR,,DevLoader,,*NTKERN
-HKR,,NTMPDriver,,usbhub.sys
+HKR,,NTMPDriver,,usbhub-winxp.sys
 
 [CommonClassParent.AddReg]
 HKR,,DevLoader,,*NTKERN
-HKR,,NTMPDriver,,usbccgp.sys
+HKR,,NTMPDriver,,usbccgp-winxp.sys
 
 
 [USB.CopyFiles.NT]
 usbd.sys
-usbhub.sys
+usbhub-winxp.sys
 
 [USB.DelFiles.NT]
-usbhub.sys,,,1
+usbhub-winxp.sys,,,1
 openhci.sys,,,1
 uhcd.sys,,,1
 usbd.sys,,,1
@@ -452,13 +461,13 @@ ehidkbd.inf,,,1
 ehidjoy.inf,,,1
 
 [HUB.CopyFiles]
-usbhub.sys
+usbhub-winxp.sys
 
 [HUB.CopyFiles.NT]
-usbhub.sys
+usbhub-winxp.sys
 
 [CommonClassParent.CopyFiles]
-usbccgp.sys
+usbccgp-winxp.sys
 
 
 
@@ -656,3 +665,5 @@ USB\CLASS_09&SUBCLASS_01.DeviceDesc="Generic USB Hub"
 USB\CLASS_09.DeviceDesc="Generic USB Hub"
 
 USB\UNKNOWN.DeviceDesc="Unknown Device"
+
+USB\VID_077D&PID_0223.DeviceDesc="Griffin iMic USB audio system"
